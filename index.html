@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>占い返金確認</title>
+</head>
+<body>
+<style>
+  :root {
+    --ai: #16243d;
+    --ai-deep: #0f1930;
+    --ai-tint: #eef1f6;
+    --washi: #f6f4ef;
+    --paper: #fdfcfa;
+    --kin: #b08d3c;
+    --kin-hi: #d3b26a;
+    --shu: #b13a2a;
+    --shu-tint: #f6e9e5;
+    --line-green: #06c755;
+    --ink: #24272e;
+    --ink-soft: #676c76;
+    --hair: #e2ddd2;
+    --hair-cool: #d9dde5;
+    --mincho: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    --gothic: "Hiragino Kaku Gothic ProN", "Yu Gothic Medium", "Yu Gothic", "Noto Sans JP", sans-serif;
+    --latin: "Baskerville", "Times New Roman", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    margin: 0;
+    background: var(--washi);
+    color: var(--ink);
+    font-family: var(--gothic);
+    font-size: 15.5px;
+    line-height: 2;
+    letter-spacing: 0.03em;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    text-align: center; /* 全体中央揃え */
+  }
+  h1, h2, h3, .mincho {
+    font-family: var(--mincho);
+    font-feature-settings: "palt" 1;
+    font-weight: 600;
+    margin: 0;
+  }
+  .eyebrow {
+    font-family: var(--gothic);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    color: var(--kin);
+    margin: 0 0 18px;
+  }
+  .eyebrow::after { content: ""; display: inline-block; width: 28px; height: 1px; background: var(--kin); vertical-align: 4px; margin-left: 14px; }
+
+  .topbar {
+    background: var(--ai-deep);
+    border-bottom: 1px solid rgba(211, 178, 106, 0.25);
+    padding: 18px 24px 16px;
+  }
+  .topbar-inner {
+    max-width: 1080px; margin: 0 auto;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .logo { color: #f1ede2; line-height: 1.3; }
+  .logo .logo-ja {
+    font-family: var(--mincho);
+    font-feature-settings: "palt" 1;
+    font-size: 19px;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    display: block;
+  }
+  .logo .logo-en {
+    font-family: var(--latin);
+    font-size: 8.5px;
+    letter-spacing: 0.42em;
+    color: var(--kin-hi);
+    text-transform: uppercase;
+    display: block;
+    margin-top: 4px;
+  }
+  .topbar-chips { display: flex; gap: 8px; }
+  .topbar-chips span {
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    color: var(--kin-hi);
+    border: 1px solid rgba(211, 178, 106, 0.45);
+    padding: 4px 12px;
+    white-space: nowrap;
+  }
+
+  /* ---------- ヒーロー ---------- */
+  .hero {
+    position: relative;
+    background:
+      radial-gradient(120% 90% at 85% -10%, #223452 0%, transparent 55%),
+      linear-gradient(170deg, #142138 0%, var(--ai-deep) 70%);
+    color: #eef0f4;
+    padding: 72px 24px 96px;
+    overflow: hidden;
+  }
+  .hero-ghost {
+    position: absolute;
+    right: -0.08em; top: -0.18em;
+    font-family: var(--mincho);
+    font-size: min(46vw, 560px);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(211, 178, 106, 0.13);
+    pointer-events: none;
+    user-select: none;
+  }
+  .hero-inner {
+    position: relative;
+    max-width: 1080px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .hero-copy { max-width: 660px; margin: 0 auto; }
+  .hero h1 {
+    font-size: clamp(30px, 8.5vw, 52px);
+    line-height: 1.58;
+    letter-spacing: 0.06em;
+    color: #f4f1e8;
+    text-wrap: balance;
+    margin: 0 0 18px;
+  }
+  .hero h1 .kin { color: var(--kin-hi); }
+  .hero .lede {
+    font-size: 15.5px;
+    line-height: 2.1;
+    letter-spacing: 0.04em;
+    color: #c0c9d8;
+    margin: 0 auto 24px;
+  }
+
+  .free-badge {
+    display: inline-block;
+    font-family: var(--mincho);
+    font-feature-settings: "palt" 1;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    background: var(--shu);
+    color: #fdf6f0;
+    padding: 10px 26px 11px;
+    border-radius: 2px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    margin: 0 auto 30px;
+  }
+
+  .search-panel {
+    background: var(--paper);
+    border-top: 3px solid var(--kin);
+    color: var(--ink);
+    padding: 30px 30px 26px;
+    box-shadow: 0 24px 60px rgba(5, 10, 22, 0.5);
+  }
+  .search-label {
+    font-family: var(--mincho);
+    font-feature-settings: "palt" 1;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--ai);
+    margin: 0 0 14px;
+  }
+  .search-row { position: relative; }
+  #vendor-search {
+    width: 100%;
+    font-size: 17px;
+    font-family: var(--gothic);
+    letter-spacing: 0.03em;
+    padding: 16px 18px;
+    border: 1.5px solid var(--ai);
+    border-radius: 0;
+    background: #fff;
+    color: var(--ink);
+    appearance: none;
+    text-align: center;
+  }
+  #vendor-search:focus { outline: 3px solid rgba(176, 141, 60, 0.45); outline-offset: 1px; }
+  #vendor-search::placeholder { color: #a0a5ae; }
+
+  .suggest {
+    position: absolute;
+    top: calc(100% + 6px); left: 0; right: 0;
+    background: #fff;
+    border: 1px solid var(--hair-cool);
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.22);
+    z-index: 40;
+    max-height: 350px;
+    overflow-y: auto;
+    display: none;
+  }
+  .suggest.open { display: block; }
+  .suggest-head { font-size: 12px; color: var(--ink-soft); padding: 10px 16px 4px; margin: 0; }
+  .suggest button.hit {
+    display: block; width: 100%;
+    text-align: center;
+    background: none; border: 0;
+    border-top: 1px solid #f0f1f4;
+    padding: 13px 16px;
+    cursor: pointer;
+    font-family: var(--gothic);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .suggest button.hit:hover, .suggest button.hit:focus-visible { background: var(--ai-tint); outline: none; }
+  .hit-name { font-family: var(--mincho); font-feature-settings: "palt" 1; font-weight: 600; font-size: 16px; color: var(--ai); }
+  .hit-kana { font-size: 12px; color: var(--ink-soft); margin-left: 8px; }
+  .hit-meta { font-size: 12.5px; color: var(--ink-soft); display: block; }
+  .badge {
+    display: inline-block;
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 2px 9px;
+    vertical-align: 2px;
+    margin-left: 10px;
+  }
+  .badge.info { background: var(--shu-tint); color: var(--shu); }
+  .suggest .no-hit { padding: 14px 16px; font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+  .suggest .free-entry {
+    display: block; width: 100%;
+    text-align: center;
+    border: 0; border-top: 1px dashed var(--hair);
+    background: #faf7ef;
+    padding: 13px 16px;
+    font-family: var(--gothic);
+    font-size: 13.5px;
+    color: #7a621f;
+    cursor: pointer;
+  }
+  .suggest .free-entry:hover, .suggest .free-entry:focus-visible { background: #f3edda; outline: none; }
+
+  .trust-row {
+    display: flex; flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 26px;
+    margin: 18px 0 0;
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+  }
+  .trust-row span::before { content: "◆"; color: var(--kin); font-size: 9px; margin-right: 7px; vertical-align: 1px; }
+
+  .gojuon { margin-top: 22px; border-top: 1px solid var(--hair-cool); padding-top: 18px; }
+  .gojuon-label { font-size: 12px; color: var(--ink-soft); letter-spacing: 0.06em; margin: 0 0 10px; }
+  .gojuon-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .gojuon-tabs button {
+    font-family: var(--mincho);
+    font-feature-settings: "palt" 1;
+    font-size: 13.5px;
+    letter-spacing: 0.1em;
+    padding: 6px 13px;
+    border: 1px solid var(--hair-cool);
+    background: #fff;
+    color: var(--ai);
+    cursor: pointer;
+  }
+  .gojuon-tabs button[aria-pressed="true"] { background: var(--ai); border-color: var(--ai); color: #fff; }
+  .gojuon-tabs button:focus-visible { outline: 3px solid rgba(176, 141, 60, 0.4); }
+  .gojuon-list { margin-top: 12px; display: grid; gap: 6px; max-height: 300px; overflow-y: auto; }
+  .gojuon-list button {
+    text-align: center;
+    font-family: var(--gothic);
+    font-size: 14px;
+    padding: 11px 14px;
+    border: 1px solid var(--hair-cool);
+    background: #fff;
+    cursor: pointer;
+    line-height: 1.6;
+  }
+  .gojuon-list button:hover, .gojuon-list button:focus-visible { border-color: var(--ai); outline: none; }
+  .gojuon-empty { font-size: 13px; color: var(--ink-soft); margin: 2px; }
+
+  /* ---------- 診断フロー ---------- */
+  main { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  .step {
+    background: var(--paper);
+    border: 1px solid var(--hair);
+    border-top: 3px solid var(--ai);
+    margin-top: 32px;
+    padding: 34px 32px 36px;
+  }
+  .step[hidden] { display: none; }
+  .step-eyebrow {
+    font-family: var(--latin);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--kin);
+    margin: 0 0 10px;
+  }
+  .step h2 {
+    font-size: 23px;
+    line-height: 1.7;
+    letter-spacing: 0.08em;
+    color: var(--ai);
+    text-wrap: balance;
+    margin: 0 0 8px;
+  }
+  .step .step-note { font-size: 13.5px; line-height: 1.95; color: var(--ink-soft); margin: 0 0 22px; }
+
+  .vendor-card {
+    border: 1px solid var(--hair);
+    border-left: 3px solid var(--kin);
+    padding: 18px 20px;
+    margin-bottom: 4px;
+    background: #fff;
+  }
+  .vendor-card .vc-name {
+    font-family: var(--mincho);
+    font-feature-settings: "palt" 1;
+    font-size: 19px; font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ai);
+    margin: 0 0 6px;
+  }
+  .vendor-card dl {
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto auto;
+    width: fit-content;
+    gap: 2px 14px;
+    font-size: 13.5px;
+    line-height: 1.9;
+    text-align: left; /* 情報表組みのみ左揃えを維持(中央配置) */
+  }
+  .vendor-card dt { color: var(--ink-soft); }
+  .vendor-card dd { margin: 0; }
+  .vendor-card a { color: var(--ai); }
+  .vendor-card .vc-free-note {
+    font-size: 12.5px; color: #7a621f;
+    background: #faf7ef;
+    padding: 9px 13px;
+    margin: 12px 0 0;
+    line-height: 1.8;
+  }
+
+  .checklist { display: grid; gap: 9px; margin: 0; }
+  .checklist label {
+    display: flex; gap: 13px; align-items: flex-start;
+    justify-content: center;
+    border: 1px solid var(--hair);
+    padding: 13px 16px;
+    cursor: pointer;
+    font-size: 14.5px;
+    line-height: 1.75;
+    background: #fff;
+  }
+  .checklist label:hover { border-color: var(--kin); }
+  .checklist label:has(input:checked) { border-color: var(--ai); background: var(--ai-tint); }
+  .checklist input { margin-top: 6px; width: 16px; height: 16px; accent-color: var(--ai); flex: none; }
+  .tag-common {
+    display: inline-block;
+    font-size: 10.5px;
+    color: var(--shu);
+    background: var(--shu-tint);
+    padding: 1px 9px;
+    margin-left: 8px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    vertical-align: 1px;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    font-family: var(--gothic);
+    font-size: 15.5px; font-weight: 600;
+    letter-spacing: 0.14em;
+    background: var(--ai);
+    color: #fff;
+    border: 0; border-radius: 0;
+    padding: 16px 42px;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background 0.15s ease;
+  }
+  .btn-primary:hover { background: var(--ai-deep); }
+  .btn-primary:focus-visible { outline: 3px solid rgba(176, 141, 60, 0.55); outline-offset: 2px; }
+
+  .memo-box {
+    background: #fff;
+    border: 1px solid var(--hair);
+    padding: 22px 24px;
+    font-size: 13.5px;
+    line-height: 2;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    font-variant-numeric: tabular-nums;
+    text-align: left; /* 生成メモは文書なので左揃えを維持 */
+  }
+  .memo-caption { font-size: 12px; color: var(--ink-soft); margin: 12px 0 0; line-height: 1.9; }
+
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  .cta-row button {
+    flex: 1 1 220px;
+    font-family: var(--gothic);
+    font-size: 15px; font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 17px 18px;
+    cursor: pointer;
+    border: 0; border-radius: 0;
+  }
+  .cta-line { background: var(--line-green); color: #fff; }
+  .cta-line:hover { filter: brightness(0.94); }
+  .cta-form { background: #fff; color: var(--ai); border: 1.5px solid var(--ai) !important; }
+  .cta-form:hover { background: var(--ai-tint); }
+  .cta-row button:focus-visible { outline: 3px solid rgba(176, 141, 60, 0.55); outline-offset: 2px; }
+  .cta-note {
+    margin-top: 14px;
+    font-size: 13px;
+    color: #2f6b4f;
+    background: #e4f0ea;
+    padding: 10px 14px;
+    display: none;
+  }
+  .cta-note.show { display: block; }
+
+  /* ---------- 静的セクション ---------- */
+  .sect { padding: 88px 24px; }
+  .sect-inner { max-width: 720px; margin: 0 auto; }
+  .sect h2 {
+    font-size: clamp(23px, 3.4vw, 30px);
+    line-height: 1.75;
+    letter-spacing: 0.09em;
+    color: var(--ai);
+    text-wrap: balance;
+    margin: 0 0 20px;
+  }
+  .sect .body { max-width: 36em; margin: 0 auto; }
+  .reveal-io { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal-io.shown { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-io { opacity: 1; transform: none; transition: none; }
+  }
+
+  .sect-keep {
+    background: var(--ai-deep);
+    color: #dfe3ea;
+  }
+  .sect-keep .eyebrow { color: var(--kin-hi); }
+  .sect-keep .eyebrow::after { background: var(--kin-hi); }
+  .sect-keep h2 { color: #f2efe6; }
+  .sect-keep .body { color: #b9c2d2; }
+  .keep-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 26px; }
+  .keep-items span {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(211, 178, 106, 0.4);
+    color: #e4d7b4;
+    padding: 7px 16px;
+  }
+
+  .sect-cta {
+    background: var(--ai-deep);
+    padding: 60px 24px 56px;
+    border-bottom: 1px solid rgba(211, 178, 106, 0.18);
+  }
+
+  .sect-alt { background: var(--paper); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+  .faq details { border-bottom: 1px solid var(--hair); }
+  .faq details:first-of-type { border-top: 1px solid var(--hair); }
+  .faq summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex; gap: 18px; align-items: baseline;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 20px 8px;
+    font-family: var(--mincho);
+    font-feature-settings: "palt" 1;
+    font-size: 16.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ai);
+    line-height: 1.7;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: "問"; font-size: 13px; color: var(--kin); flex: none; letter-spacing: 0; }
+  .faq summary::after { content: "＋"; margin-left: auto; color: var(--kin); font-family: var(--gothic); flex: none; }
+  .faq details[open] summary::after { content: "－"; }
+  .faq .faq-a { display: flex; gap: 18px; justify-content: flex-start; padding: 0 8px 22px; }
+  .faq .faq-a::before { content: "答"; font-size: 13px; color: var(--shu); flex: none; line-height: 2; }
+  .faq .faq-a p { font-size: 14px; line-height: 2; color: var(--ink); margin: 0; max-width: 36em; text-align: left; }
+  .faq summary:focus-visible { outline: 3px solid rgba(176, 141, 60, 0.4); }
+
+  .sect-final {
+    position: relative;
+    background:
+      radial-gradient(100% 120% at 15% 110%, #223452 0%, transparent 55%),
+      var(--ai-deep);
+    color: #eef0f4;
+    text-align: center;
+    padding: 110px 24px 120px;
+    overflow: hidden;
+  }
+  .final-ghost {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--mincho);
+    font-size: min(34vw, 380px);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(211, 178, 106, 0.12);
+    pointer-events: none;
+    user-select: none;
+  }
+  .sect-final .sect-inner { position: relative; }
+  .sect-final h2 { color: #f2efe6; margin-bottom: 12px; }
+  .sect-final p { color: #b9c2d2; font-size: 14.5px; margin: 0 auto 38px; max-width: 30em; }
+  .btn-final {
+    font-family: var(--gothic);
+    font-size: 16px; font-weight: 600;
+    letter-spacing: 0.14em;
+    background: var(--kin);
+    color: #171207;
+    border: 0;
+    padding: 19px 52px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn-final:hover { background: var(--kin-hi); }
+  .btn-final:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+  footer {
+    background: var(--ai-deep);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #8f99ab;
+    font-size: 12px;
+    line-height: 2;
+    padding: 40px 24px 56px;
+  }
+  footer .foot-inner { max-width: 720px; margin: 0 auto; }
+  footer a { color: #aab6c9; }
+
+  @media (max-width: 900px) {
+    .hero { padding: 52px 20px 72px; }
+    .hero-ghost { font-size: 78vw; opacity: 0.7; }
+    .sect { padding: 64px 20px; }
+    .search-panel { padding: 24px 20px 22px; }
+    .step { padding: 28px 20px 30px; }
+    .topbar-chips { display: none; }
+  }
+</style>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">
+      <span class="logo-ja">占い返金確認</span>
+      <span class="logo-en">Uranai Refund Check</span>
+    </div>
+    <div class="topbar-chips"><span>相談無料</span><span>匿名で確認可</span></div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-ghost" aria-hidden="true">占</div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <h1>占い・診断に払ったお金、<br><span class="kin">戻ってくる<br>可能性があります。</span></h1>
+      <p class="lede">サイト名を入力すると、返金できる可能性があるか確認できます。</p>
+      <p class="free-badge">相談は完全無料</p>
+
+      <div class="search-panel">
+        <p class="search-label">サイト名・鑑定士名・URLで検索</p>
+        <div class="search-row">
+          <input id="vendor-search" type="text" autocomplete="off"
+                 placeholder="例：めいうん　meiun　鑑定士の名前"
+                 aria-label="占いサイト名・鑑定士名・URLで検索" />
+          <div class="suggest" id="suggest" role="listbox"></div>
+        </div>
+        <div class="trust-row">
+          <span>匿名で確認できます</span><span>名前・電話番号の入力は不要です</span><span>相談無料</span>
+        </div>
+
+        <div class="gojuon">
+          <p class="gojuon-label">入力せずに探す — サイト名の頭文字から</p>
+          <div class="gojuon-tabs" id="gojuon-tabs"></div>
+          <div class="gojuon-list" id="gojuon-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section class="step" id="step2" hidden>
+    <p class="step-eyebrow">RESULT</p>
+    <h2 id="step2-title">返金できる可能性があります</h2>
+    <p class="step-note" id="step2-body">入力されたサイトに関連する相談があります。支払い方法や、やり取りの内容によっては、返金相談の対象になる場合があります。</p>
+    <div id="vendor-detail"></div>
+    <button class="btn-primary" id="to-step3">返金できるか確認する</button>
+  </section>
+
+  <section class="step" id="step3" hidden>
+    <p class="step-eyebrow">CHECK</p>
+    <h2>当てはまるものを選んでください</h2>
+    <p class="step-note" id="check-note"></p>
+    <div class="checklist" id="checklist"></div>
+    <button class="btn-primary" id="gen-memo">返金可能性を確認する</button>
+  </section>
+
+  <section class="step" id="step4" hidden>
+    <p class="step-eyebrow">RESULT</p>
+    <h2>返金相談の対象になる可能性があります</h2>
+    <p class="step-note">選択内容をもとに、相談メモを作成しました。このままLINEまたはフォームで相談できます。</p>
+    <div class="memo-box" id="memo"></div>
+    <p class="memo-caption">※ プロトタイプではテンプレート生成。本番はLLM APIで自由記述の抽出・要約・名寄せを行う。</p>
+    <div class="cta-row">
+      <button class="cta-line" id="cta-line">LINEで相談する（無料）</button>
+      <button class="cta-form" id="cta-form">フォームで相談する</button>
+    </div>
+    <p class="cta-note" id="cta-note">プロトタイプのため送信は行われません。本番ではLINE友だち追加またはフォーム送信に接続します。</p>
+  </section>
+</main>
+
+<section class="sect-cta">
+  <div class="sect-inner reveal-io">
+    <button class="btn-final cta-scroll">無料で返金の可能性をチェック ▶︎</button>
+  </div>
+</section>
+
+<section class="sect sect-keep">
+  <div class="sect-inner reveal-io">
+    <p class="eyebrow">大切なお願い</p>
+    <h2>退会・削除は、少しお待ちください。</h2>
+    <p class="body">やり取りや支払いの記録は、返金の確認に使う大切な材料です。相談が終わるまで、そのまま残しておいてください。</p>
+    <div class="keep-items">
+      <span>決済明細</span><span>メール</span><span>LINEのやり取り</span><span>サイト内メッセージ</span><span>ギフトカード番号</span>
+    </div>
+  </div>
+</section>
+
+<section class="sect sect-alt">
+  <div class="sect-inner reveal-io faq">
+    <p class="eyebrow">よくあるご質問</p>
+    <h2>不安なことから、どうぞ。</h2>
+    <details>
+      <summary>お金は返ってきますか。</summary>
+      <div class="faq-a"><p>支払い方法・時期・やり取りの内容によって異なります。まずサイト名の確認から始めてください。確認は無料です。</p></div>
+    </details>
+    <details>
+      <summary>家族に知られたくありません。</summary>
+      <div class="faq-a"><p>確認は匿名のままできます。名前も電話番号も不要です。</p></div>
+    </details>
+    <details>
+      <summary>相談したら、必ず依頼しないといけませんか。</summary>
+      <div class="faq-a"><p>いいえ。方針と費用の説明を聞いたうえで、ご自身で決められます。</p></div>
+    </details>
+  </div>
+</section>
+
+<section class="sect-final">
+  <p class="final-ghost" aria-hidden="true">返金</p>
+  <div class="sect-inner">
+    <h2>まずはご相談ください</h2>
+    <button class="btn-final cta-scroll">無料で返金の可能性をチェック ▶︎</button>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <p>本ページは内部確認用のプロトタイプです。送信機能はありません。返金の可否は個別の事情により異なります。</p>
+    <p>業者データ出典：<a href="https://z-law.jp/fraud-media/" target="_blank" rel="noopener">詐欺バスターZ（法律事務所Z）</a>の公開記事 63 件（2026-07-06 取得）。公開時は提供元の許諾・表示条件を確認のこと。</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* 出典: 詐欺バスターZ (z-law.jp/fraud-media) 公開記事より自動構造化 */
+  var VENDORS = [{"name":"命運","display":"命運～meiun～","kana":"めいうん","row":"ま行","aliases":["meiun","mn-meiun","mn-meiun.com"],"company":"Star Company Limited","personas":["真田 京介","鈴木 心春"],"patterns":["abroad","endless","gift","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/meiun/"},{"name":"開運colorful～開運カラフル～","display":"開運colorful～開運カラフル～","kana":null,"row":"その他","aliases":["colorful","k-colorful","k-colorful.jp"],"company":"株式会社Uスクウェア","personas":["高野","神凪","森羅","麻生幸之助","ちよばあ","数秘術者・かずえ","水崎いずな"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/kaiuncolorful/"},{"name":"STAR GATE~スターゲート~","display":"STAR GATE~スターゲート~","kana":null,"row":"英数","aliases":["gate","star","starrgate","starrgate.co.jp"],"company":"合同会社セブン","personas":[],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/stargate/"},{"name":"for you～悩めるアナタへ～","display":"for you～悩めるアナタへ～","kana":null,"row":"英数","aliases":["for","foryouswk","foryouswk.jp","you"],"company":"株式会社イースト","personas":[],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/foryou/"},{"name":"ガーネット","display":"ガーネット","kana":null,"row":"か行","aliases":["gg","gg.garrnnet.com"],"company":"PLEASANT FRIDAY Co.,Ltd.","personas":["小宮山美和","真木ひとみ"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/garnet/"},{"name":"dreamy","display":"dreamy～ドリーミー","kana":null,"row":"英数","aliases":["dreamy-uranai","dreamy-uranai.jp"],"company":"合同会社Virtual","personas":["哉太英豪先生"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/dreamy/"},{"name":"ROSE~ローズ~","display":"ROSE~ローズ~","kana":null,"row":"英数","aliases":["ros","ros.rooossseee.com","rose"],"company":"SEVEN SHEETS Co.,Ltd.","personas":["御巫 さゆり","早乙女 潤子","吉成 正"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/rose/"},{"name":"幸運の環","display":"幸運の環～こううんのわ～","kana":"こううんのわ","row":"か行","aliases":["koun-wa","koun-wa.com"],"company":"株式会社３Ｐ’Ｓ","personas":["佐藤 浩一","神代 誠","山本 陽子","安倍 光晴"],"patterns":["win"],"article_url":"https://z-law.jp/fraud-media/fraudster/kouunnowa/"},{"name":"ソフィア～Sophia～","display":"ソフィア～Sophia～","kana":null,"row":"さ行","aliases":["sophia","ura-charis","ura-charis.jp"],"company":"株式会社カリス","personas":["中冨カヤ","千観寿慈好","青芭 丈世","種梼","希就 昇棘菜","冥全王","萬条院 風喜","京極 秋水","南先生","旧サイト情報"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/sophia/"},{"name":"夢幻～むげん・ムゲン～","display":"夢幻～むげん～","kana":null,"row":"その他","aliases":["mugen-online","mugen-online.com"],"company":"合同会社CoCo","personas":["咲良坂 恭介","美谷島 兄弟先生","銀島 宗右エ門先生"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/mugen/"},{"name":"万～万を期して真の万福今掴む～","display":"万","kana":"まん・よろず","row":"ま行","aliases":["manpuku462","manpuku462.jp"],"company":"株式会社Big","personas":["リリア","白石 さなえ","開運 ふみ子","橘 美津子","Mary","旧サイト情報","現在運用中の新サイト名「万」は、旧サイト名「MIETA」より移行しました。"],"patterns":["endless","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/man/"},{"name":"天命の導き","display":"天命の導き","kana":"てんめいのみちびき","row":"た行","aliases":["tenmei-michibiki","tenmei-michibiki.com"],"company":"株式会社G&D","personas":["一条 みろく","田中 泰","瀧見 龍玄","ミンユー","レナード・ヴァーンシュタイン"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/tenmeinomichibiki/"},{"name":"めびうす（メビウス）","display":"めびうす","kana":null,"row":"ま行","aliases":["life-ft","life-ft.jp"],"company":"株式会社アクセス","personas":["華音","天生 仙流","神月","美琴","新サイト情報","現在、「めびうす」はサイト閉鎖され、新サイト「満天の幸福」として運用中です。"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/mebius/"},{"name":"iroha","display":"iroha~いろは","kana":null,"row":"英数","aliases":["iroha-oran24","iroha-oran24.com"],"company":"株式会社プラスワン","personas":["宇佐美 潤一","望月 美智子","成宮 幸之"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/iroha/"},{"name":"華みずき","display":"華みずき","kana":null,"row":"その他","aliases":["hn-mizuki","hn-mizuki.com"],"company":"株式会社ティーバレー","personas":["フランソワ・アデール＆山村通訳","星奈 ちひろ","あすか 愛以美","ひなた喜代","漆原 亜里砂"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/hanamizuki/"},{"name":"バイオレット","display":"Violet～バイオレット","kana":null,"row":"は行","aliases":["vi","vi.violleet.com","violet"],"company":"TREASURE SUNDAY Co.,Ltd.","personas":["東条ゆきこ","遠藤努"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/violet/"},{"name":"満天の幸福","display":"満天の幸福","kana":"まんてんのこうふく","row":"ま行","aliases":["335hw4fwe5","335hw4fwe5.com"],"company":"株式会社CROWN","personas":["水仙宗政","阿嶋 晴明","沖田 洸龍","マダムケイコ"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/mantennokouhuku/"},{"name":"Precious-プレシャス-","display":"Precious-プレシャス-","kana":null,"row":"英数","aliases":["for-precious","for-precious.net","precious-"],"company":"株式会社アタックル","personas":["大東","ラビアングリーン道子","玄田 勝敏","阪堂 栄子"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/precious/"},{"name":"ひめゆき～姫幸","display":"ひめゆき～姫幸","kana":null,"row":"は行","aliases":["himeyuki","himeyuki.jp"],"company":"株式会社シキナ","personas":["神谷とおる","GODHAND☆幸太郎","八雲 千寿","ふろしき辰夫","篠崎敏子"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/himeyuki/"},{"name":"星読みの館","display":"星読みの館","kana":null,"row":"その他","aliases":["hoshiyomi-yakata","hoshiyomi-yakata.jp"],"company":"合同会社スタイリッシュメーカー","personas":["片倉 剣","桐生 京子","天蓋 雫","名水 干珠"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/hoshiyominoyakata/"},{"name":"prime","display":"prime(プライム)","kana":null,"row":"英数","aliases":["prime-fortune","prime-fortune.jp"],"company":"株式会社アシタ","personas":["侍沁寿 明嘉","榮 永凛","結 袁招","ケイ"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/prime/"},{"name":"泰峯門","display":"泰峯門（たいほうもん）","kana":null,"row":"その他","aliases":["taihoumon","taihoumon.com"],"company":"LC株式会社","personas":["天海智子","宝前 尊","角巻 ゆかり","蒼喜","一柳和巳","雛森梓","エドシュナイダー光貴","如月当真"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/taihoumon/"},{"name":"絆","display":"絆","kana":null,"row":"その他","aliases":["kizuna-uranai","kizuna-uranai.jp"],"company":"株式会社絆","personas":["青芭 丈世","國主 無玄","千観寿 慈好","冥 全王","國基 スミ","縄梼","識 承禿才","鳥居 ナミ","豊川 トモ"],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/kizuna/"},{"name":"万福","display":"万福","kana":null,"row":"その他","aliases":["manpuku-ja","manpuku-ja.jp"],"company":"合同会社wisdom","personas":["松原 歳超","桂 秀次","天流 麗子","曹休 御折"],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/manpuku/"},{"name":"撫子","display":"撫子（なでしこ）","kana":null,"row":"その他","aliases":["ft-flower","ft-flower.com"],"company":"株式会社クラウドリンク","personas":["一柳 明衣","早乙女 明美","クォン スンヒョ","藍咲 しずね"],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/nadeshiko/"},{"name":"URANAI palace","display":"URANAI palace-占いパレス-","kana":null,"row":"英数","aliases":["palace-","u-palace","u-palace.jp","uranai"],"company":"株式会社crescent(クレシェント)","personas":[],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/uranai-palace/"},{"name":"fericite-フェリシテ-","display":"fericite-フェリシテ-","kana":null,"row":"英数","aliases":["fericite-","for20-coco","for20-coco.com"],"company":"株式会社カルマ","personas":[],"patterns":["endless","win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/fericite/"},{"name":"RAINBOW","display":"RAINBOW～レインボー","kana":null,"row":"英数","aliases":["rainbow-mancy","rainbow-mancy.com"],"company":"CONG TY TNHH NOI THAT THE THUAN","personas":[],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/rainbow/"},{"name":"スピリチュアルゲート","display":"スピリチュアルゲート","kana":null,"row":"さ行","aliases":["spiritual-gt","spiritual-gt.com"],"company":"株式会社Next Stage","personas":["新サイト情報","現在、「スピリチュアルゲート」は閉鎖され、新サイト「開運の扉」として運用中です。"],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/spiritual-gate/"},{"name":"開運の扉","display":"開運の扉","kana":null,"row":"その他","aliases":["precious-gate","precious-gate.com"],"company":"株式会社Next Stage","personas":["旧サイト情報"],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/precious-gate/"},{"name":"VERITA（ベリータ）","display":"VERITA","kana":null,"row":"英数","aliases":["verita","verita-t","verita-t.jp"],"company":"株式会社アフォリスメン","personas":[],"patterns":["win"],"article_url":"https://z-law.jp/fraud-media/fraudster/verita/"},{"name":"八占師（パッセンジャー）","display":"八占師（パッセンジャー）","kana":null,"row":"その他","aliases":["8senjya","8senjya.jp"],"company":"株式会社ロワ","personas":["佐藤岳天","GODHAND☆幸太郎","宿命占星術師◆晃星先生","神谷とおる","田中実"],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/passenja/"},{"name":"カルナ","display":"CARNA（カルナ）","kana":null,"row":"か行","aliases":["car-na","car-na.jp","carna"],"company":"株式会社Spur","personas":["勝村 義勇〔かつむら ぎゆう〕","柳 翠蘭〔リュウ スイラン〕","郭 孔明〔かくこうめい〕"],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/car-na/"},{"name":"命照","display":"命照（メーテル）","kana":null,"row":"その他","aliases":["maytail","maytail.jp"],"company":"株式会社メシアン","personas":["神谷とおる","恋愛水晶占い～愛川一路","レオン・アルバーニ","星読みの巫女","西嶋マリア","轟・アナベル","GODHAND幸太郎～悪運けずりの達人～"],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/me-teru/"},{"name":"CRYSTAL","display":"CRYSTAL～クリスタル","kana":null,"row":"英数","aliases":["fab-inst","fab-inst.com"],"company":"株式会社グランデ","personas":["涼風 紫朗","堂島 正平","松重 倫太郎","八戸 恵","福富 栄二","五十嵐 聖司","槇野 ナオミ"],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/crystal/"},{"name":"Coral","display":"Coral","kana":null,"row":"英数","aliases":["coralnov","coralnov.jp"],"company":"株式会社アクセス","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/coral/"},{"name":"ミライ開運","display":"ミライ開運","kana":null,"row":"ま行","aliases":["miray-k","miray-k.jp"],"company":"株式会社シュエット","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/miraikaiun/"},{"name":"LUNARIA(ルナリア)","display":"LUNARIA(ルナリア)","kana":null,"row":"英数","aliases":["luna-ria","luna-ria.jp","lunaria"],"company":"株式会社メイプルスリー","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/lunaria/"},{"name":"CHARM","display":"CHARM～チャーム","kana":null,"row":"英数","aliases":["fortune-charm","fortune-charm.com"],"company":"株式会社ガラパゴス","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/charm/"},{"name":"永〜永代に齎される幸運の秘占術〜","display":"永（とこしえ）","kana":null,"row":"その他","aliases":["tokoce","tokoce.jp"],"company":"株式会社LIVIE(リヴィ)","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/tokoshie/"},{"name":"神秘の森","display":"神秘の森","kana":null,"row":"その他","aliases":["mystery-forest","mystery-forest.com"],"company":"合同会社トリニティ","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/mystery-forest/"},{"name":"Destino（デスティーノ）","display":"Destino（デスティーノ）","kana":null,"row":"英数","aliases":["destino","s4fk","s4fk.destin0.jp"],"company":"株式会社エンスージアスト","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/destino/"},{"name":"福籠","display":"福籠（ふくろう）～幸福の目覚め～","kana":"ふくろう","row":"は行","aliases":["luuce","luuce.jp"],"company":"合同会社メディア","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/hukuroou/"},{"name":"ルーチェ","display":"ルーチェ","kana":null,"row":"ら行","aliases":["luuce","luuce.jp"],"company":"株式会社レガロ","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/luuce/"},{"name":"せせらぎ","display":"せせらぎ","kana":null,"row":"さ行","aliases":["seselagi","seselagi.com"],"company":"株式会社Valley","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/seseragi/"},{"name":"本格占いHEART","display":"本格占いHEART～ハート","kana":null,"row":"その他","aliases":["brillante-etoile","brillante-etoile.com","heart"],"company":"KIM CUONG TRADE EQUIPMENT INSTALLATION SERVICES COMPANY LIMITED","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/heart/"},{"name":"L’etoile","display":"L’etoile～レトワール","kana":null,"row":"英数","aliases":["brillante-etoile","brillante-etoile.com","etoile"],"company":"合同会社サマーアイズ","personas":[],"patterns":["win","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/letoile/"},{"name":"スピリチュアル","display":"スピリチュアル","kana":null,"row":"さ行","aliases":["spiritual-jp","spiritual-jp.com"],"company":"合同会社KOS","personas":[],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/spiritual/"},{"name":"グロリア～gloria～","display":"グロリア～gloria～","kana":null,"row":"か行","aliases":["gloria","gloria-divination","gloria-divination.jp"],"company":"合同会社ランド","personas":[],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/gloria/"},{"name":"極み","display":"極み","kana":null,"row":"その他","aliases":["kiwamiweb","kiwamiweb.jp"],"company":"株式会社ピース","personas":[],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/kiwami/"},{"name":"ルミナス","display":"ルミナス","kana":null,"row":"ら行","aliases":["life-is-luminous","life-is-luminous.com"],"company":"合同会社Fans","personas":[],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/luminous/"},{"name":"フローライト","display":"フローライト","kana":null,"row":"は行","aliases":["fl","fl.floriittee.com"],"company":"BLIND DANCE Co., Ltd.","personas":[],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/florite/"},{"name":"カリス(Charis)","display":"カリス","kana":null,"row":"か行","aliases":["ura-charis","ura-charis.jp"],"company":"株式会社カリス","personas":["登場する鑑定士一覧"],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/charis/"},{"name":"MIETA（ミエタ）","display":"MIETA","kana":null,"row":"英数","aliases":["miemashita","miemashita.jp","mieta"],"company":"株式会社SUN","personas":["新サイト情報","現在、「MIETA」はサイト閉鎖され、新サイト「万」として運用中です。"],"patterns":["endless"],"article_url":"https://z-law.jp/fraud-media/fraudster/mieta/"},{"name":"祈る","display":"祈る","kana":null,"row":"その他","aliases":["inoru-fortune","inoru-fortune.jp"],"company":"株式会社イノル","personas":[],"patterns":["endless","words"],"article_url":"https://z-law.jp/fraud-media/fraudster/inoru/"},{"name":"和","display":"和（なご）","kana":"なご","row":"な行","aliases":["wa-nago-wagona","wa-nago-wagona.com"],"company":"株式会社アポロ","personas":[],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/nago/"},{"name":"トーク〜しあわせへの道〜","display":"トーク〜しあわせへの道〜","kana":null,"row":"た行","aliases":["lp","lp.liok.jp"],"company":"株式会社ミライ","personas":[],"patterns":["endless"],"article_url":"https://z-law.jp/fraud-media/fraudster/talk/"},{"name":"福寿苑","display":"福寿苑","kana":null,"row":"その他","aliases":["frewa","frewa.jp"],"company":"株式会社アクア","personas":[],"patterns":["endless"],"article_url":"https://z-law.jp/fraud-media/fraudster/fukujuen/"},{"name":"千代（旧/季の彩）","display":"千代","kana":null,"row":"その他","aliases":["chi-yo-1807chiyo","chi-yo-1807chiyo.com"],"company":"株式会社デジソル","personas":["神永清一郎","大蔵百合子","綾瀬望","早川誠","加賀美隆二"],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/chiyo/"},{"name":"幸福方程式","display":"幸福方程式","kana":null,"row":"その他","aliases":["equation-of-happiness","equation-of-happiness.com"],"company":"合同会社SYNERGY","personas":["佐竹 正明","マリア・D・朝倉","斎藤 源流斎","天河 八重子","清田 清嗣","後醍醐 健","村雲節子"],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/equation-of-happiness/"},{"name":"メッセージ","display":"メッセージ","kana":null,"row":"ま行","aliases":["msg-ft","msg-ft.jp"],"company":"株式会社IOH","personas":["宝徳","環 蒼叶","小鳥遊マリ","マダム鏡子","天道靖水","煬沢トメ","円 星翔","真宮寺","八重桜晴秀","卑弥子"],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/message/"},{"name":"COCORO（ココロ）","display":"COCORO","kana":null,"row":"英数","aliases":["cocoro","cocoro-liberty","cocoro-liberty.com"],"company":"株式会社グローバルメディア","personas":["有馬 理沙","乾たか子","金運術師・梢先生","阿国マリア","源麗子","麓心","阿部十喜治","アラン・ウィル","オダ・メリ","神月紅","アリーシャ・ホワイト","幸之助","幸四郎","間トモ子","松原ヨネ","藤原トメ","仲村幸三","相模八大","大山富雄","マリー松本","金妙寺みよこ","クララ・ワトソン"],"patterns":["endless","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/cocoro/"},{"name":"奇跡の扉","display":"奇跡の扉","kana":null,"row":"その他","aliases":["miracle-door","miracle-door.com"],"company":"株式会社OTK","personas":["利州院 現時","月原 里見","結城 佳奈美","天久","神父 アレク","蒼龍 楓","白天穂 薫","最澄","兆海","フランツ","グスタフ・T・レオンハルト"],"patterns":["addpay","win"],"article_url":"https://z-law.jp/fraud-media/fraudster/kisekinotobira/"}];
+
+  var COMMON_CHECKS = [
+    { id: "endless",  text: "鑑定が終わらなかった" },
+    { id: "addpay",   text: "追加の支払いを求められた" },
+    { id: "point",    text: "ポイントを購入した" },
+    { id: "gift",     text: "Appleギフトカードで支払った" },
+    { id: "win",      text: "高額当選・金運上昇と言われた" },
+    { id: "evidence", text: "メールやLINEが残っている" },
+    { id: "family",   text: "家族に知られたくない" }
+  ];
+
+  var ROWS = ["あ行", "か行", "さ行", "た行", "な行", "は行", "ま行", "や行", "ら行", "わ行", "英数", "その他"];
+
+  function norm(s) {
+    return s.normalize("NFKC").toLowerCase()
+      .replace(/[ァ-ヶ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0x60); })
+      .replace(/[〜~\-ー・\s、。．.,'’]/g, "");
+  }
+  function haystack(v) {
+    return [v.name, v.display, v.kana || ""].concat(v.aliases, v.personas, [v.company || ""])
+      .filter(Boolean).map(norm);
+  }
+  function bigrams(s) {
+    var out = [];
+    for (var i = 0; i < s.length - 1; i++) out.push(s.slice(i, i + 2));
+    return out;
+  }
+  function dice(a, b) {
+    if (a.length < 2 || b.length < 2) return 0;
+    var A = bigrams(a), B = bigrams(b), hit = 0;
+    var used = new Array(B.length);
+    A.forEach(function (g) {
+      for (var j = 0; j < B.length; j++) {
+        if (!used[j] && B[j] === g) { used[j] = true; hit++; break; }
+      }
+    });
+    return (2 * hit) / (A.length + B.length);
+  }
+  function search(q) {
+    var nq = norm(q);
+    if (!nq) return { exact: [], fuzzy: [] };
+    var exact = [], fuzzy = [];
+    VENDORS.forEach(function (v) {
+      var hs = haystack(v);
+      if (hs.some(function (h) { return h.indexOf(nq) !== -1; })) { exact.push(v); return; }
+      var best = Math.max.apply(null, hs.map(function (h) { return dice(nq, h); }));
+      if (best >= 0.4) fuzzy.push({ v: v, score: best });
+    });
+    fuzzy.sort(function (a, b) { return b.score - a.score; });
+    return { exact: exact, fuzzy: fuzzy.map(function (f) { return f.v; }) };
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var input = $("vendor-search"), suggest = $("suggest");
+  var selected = null;
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function hitButton(v) {
+    var b = document.createElement("button");
+    b.className = "hit";
+    b.setAttribute("role", "option");
+    var meta = [];
+    if (v.company) meta.push("運営：" + v.company);
+    if (v.personas.length) meta.push("鑑定士：" + v.personas.slice(0, 3).join("、"));
+    b.innerHTML =
+      '<span class="hit-name">' + esc(v.display) + '</span>' +
+      (v.kana ? '<span class="hit-kana">' + esc(v.kana) + '</span>' : "") +
+      '<span class="badge info">相談情報あり</span>' +
+      (meta.length ? '<span class="hit-meta">' + esc(meta.join("　")) + '</span>' : "");
+    b.addEventListener("click", function () { selectVendor(v); });
+    return b;
+  }
+
+  function renderSuggest(q) {
+    suggest.innerHTML = "";
+    if (!q.trim()) { suggest.classList.remove("open"); return; }
+    var r = search(q);
+    if (r.exact.length) {
+      r.exact.slice(0, 6).forEach(function (v) { suggest.appendChild(hitButton(v)); });
+    } else if (r.fuzzy.length) {
+      var head = document.createElement("p");
+      head.className = "suggest-head";
+      head.textContent = "もしかして：";
+      suggest.appendChild(head);
+      r.fuzzy.slice(0, 4).forEach(function (v) { suggest.appendChild(hitButton(v)); });
+    } else {
+      var no = document.createElement("p");
+      no.className = "no-hit";
+      no.textContent = "一覧に見つかりませんでした。未掲載のサイトでもこのまま確認できます。";
+      suggest.appendChild(no);
+    }
+    var free = document.createElement("button");
+    free.className = "free-entry";
+    free.textContent = "「" + q.trim() + "」のまま確認を進める →";
+    free.addEventListener("click", function () { selectCustom(q.trim()); });
+    suggest.appendChild(free);
+    suggest.classList.add("open");
+  }
+
+  input.addEventListener("input", function () { renderSuggest(input.value); });
+  input.addEventListener("focus", function () { if (input.value.trim()) renderSuggest(input.value); });
+  document.addEventListener("click", function (e) {
+    if (!suggest.contains(e.target) && e.target !== input) suggest.classList.remove("open");
+  });
+
+  /* 五十音 */
+  var tabs = $("gojuon-tabs"), list = $("gojuon-list");
+  ROWS.forEach(function (row) {
+    var hits = VENDORS.filter(function (v) { return v.row === row; });
+    if (!hits.length) return;
+    var b = document.createElement("button");
+    b.textContent = row;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () {
+      var on = b.getAttribute("aria-pressed") === "true";
+      tabs.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+      list.innerHTML = "";
+      if (on) return;
+      b.setAttribute("aria-pressed", "true");
+      hits.forEach(function (v) {
+        var vb = document.createElement("button");
+        vb.innerHTML = '<span class="hit-name">' + esc(v.display) + '</span>' +
+          (v.kana ? '<span class="hit-kana">' + esc(v.kana) + '</span>' : "") +
+          '<span class="badge info">相談情報あり</span>';
+        vb.addEventListener("click", function () { selectVendor(v); });
+        list.appendChild(vb);
+      });
+    });
+    tabs.appendChild(b);
+  });
+
+  function showStep(id) {
+    var el = $(id);
+    el.hidden = false;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function selectVendor(v) {
+    selected = { vendor: v };
+    suggest.classList.remove("open");
+    input.value = v.display;
+    $("step2-title").textContent = "返金できる可能性があります";
+    $("step2-body").textContent = "入力されたサイトに関連する相談があります。支払い方法や、やり取りの内容によっては、返金相談の対象になる場合があります。";
+    var rows = "";
+    if (v.kana) rows += "<dt>よみ</dt><dd>" + esc(v.kana) + "</dd>";
+    if (v.company) rows += "<dt>運営会社</dt><dd>" + esc(v.company) + "</dd>";
+    if (v.personas.length) rows += "<dt>鑑定士</dt><dd>" + esc(v.personas.join("、")) + "</dd>";
+    rows += '<dt>相談情報</dt><dd><a href="' + esc(v.article_url) + '" target="_blank" rel="noopener">解説記事を見る</a></dd>';
+    $("vendor-detail").innerHTML =
+      '<div class="vendor-card">' +
+      '<p class="vc-name">' + esc(v.display) + '<span class="badge info">相談情報あり</span></p>' +
+      "<dl>" + rows + "</dl></div>";
+    renderChecklist(v.patterns);
+    showStep("step2");
+  }
+
+  function selectCustom(name) {
+    selected = { custom: name };
+    suggest.classList.remove("open");
+    input.value = name;
+    $("step2-title").textContent = "このまま確認を進められます";
+    $("step2-body").textContent = "一覧に未掲載のサイトでも、支払い方法ややり取りの内容によっては、返金相談の対象になる場合があります。";
+    $("vendor-detail").innerHTML =
+      '<div class="vendor-card">' +
+      '<p class="vc-name">' + esc(name) + '</p>' +
+      "<dl><dt>掲載状況</dt><dd>一覧に未掲載のサイト名として受け付けます</dd></dl>" +
+      '<p class="vc-free-note">本番実装では、この入力をAIが既存データと名寄せし、表記ゆれ・別名・URLから候補を照合する。</p>' +
+      "</div>";
+    renderChecklist([]);
+    showStep("step2");
+  }
+
+  function renderChecklist(patterns) {
+    var wrap = $("checklist");
+    wrap.innerHTML = "";
+    $("check-note").textContent = patterns.length
+      ? "赤いしるしは、このサイトについて同様の相談が確認されている項目です。"
+      : "";
+    COMMON_CHECKS.forEach(function (c) {
+      var l = document.createElement("label");
+      var tag = patterns.indexOf(c.id) !== -1
+        ? '<span class="tag-common">このサイトの相談例あり</span>' : "";
+      l.innerHTML = '<input type="checkbox" value="' + c.id + '"><span>' + c.text + tag + "</span>";
+      wrap.appendChild(l);
+    });
+  }
+
+  $("to-step3").addEventListener("click", function () { showStep("step3"); });
+
+  $("gen-memo").addEventListener("click", function () {
+    var checks = [];
+    $("checklist").querySelectorAll("input:checked").forEach(function (i) {
+      var c = COMMON_CHECKS.filter(function (x) { return x.id === i.value; })[0];
+      if (c) checks.push("・" + c.text);
+    });
+
+    var siteName, siteLine, ref = "";
+    if (selected && selected.vendor) {
+      var v = selected.vendor;
+      siteName = v.display;
+      siteLine = v.display + (v.kana ? "（" + v.kana + "）" : "") +
+        (v.company ? "／運営：" + v.company : "") +
+        (v.personas.length ? "／鑑定士：" + v.personas.join("、") : "");
+      ref = "\n\n■ 参照\n・" + v.article_url;
+    } else {
+      siteName = selected ? selected.custom : "（未選択）";
+      siteLine = siteName + "（一覧未掲載・利用者入力）";
+    }
+
+    var memo =
+      "【相談メモ（自動生成・下書き）】\n" +
+      "■ 利用サイト\n" + siteLine + "\n\n" +
+      "■ 当てはまった状況（" + checks.length + "件）\n" +
+      (checks.length ? checks.join("\n") : "・（選択なし）") + "\n\n" +
+      "■ 相談内容\n" +
+      "・" + siteName + " への支払いについて、返金できる可能性を確認したい" + ref;
+
+    $("memo").textContent = memo;
+    showStep("step4");
+  });
+
+  function ctaDemo() { $("cta-note").classList.add("show"); }
+  $("cta-line").addEventListener("click", ctaDemo);
+  $("cta-form").addEventListener("click", ctaDemo);
+
+  document.querySelectorAll(".cta-scroll").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.getElementById("top").scrollIntoView({ behavior: "smooth" });
+      window.setTimeout(function () { input.focus(); }, 600);
+    });
+  });
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("shown"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal-io").forEach(function (el) { io.observe(el); });
+  } else {
+    document.querySelectorAll(".reveal-io").forEach(function (el) { el.classList.add("shown"); });
+  }
+})();
+</script>
+
+</body>
+</html>
